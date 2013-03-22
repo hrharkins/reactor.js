@@ -1,4 +1,4 @@
 reactor.js
 ==========
 
-Eliminate common Javascript via HTML data attribtues
+Eliminate common Javascript via HTML data attributes
