@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block markdown %}
+:int
+===
+
+Converts the current value to an integer -- produces NaN on failure.
+
+    <div class='span8' data-reactor='text'
+         data-text:#0:int='5'></div>
+<div class='alert alert-success' data-reactor='text'
+     data-text:#1:int='5'></div>
+
+    <div class='span8' data-reactor='text'
+         data-text:#0:int='10.5'></div>
+<div class='alert alert-success' data-reactor='text'
+     data-text:#1:int='10'></div>
+
+    <div class='span8' data-reactor='text'
+         data-text:#0:int='hello'></div>
+<div class='alert alert-error' data-reactor='text'
+     data-text:#1:int='hello'></div>
+
+{% endblock %}
+

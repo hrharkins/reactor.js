@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block markdown %}
+Enabling Save on Change
+===
+
+A common activity is to only enable a save button if input has changed.
+Consider the following form:
+
+    <form action='.' class='modal'>
+        <h4 class='modal-header'>Change your Email</h4>
+        <div class='modal-body'>
+            Email: <input name='email' value='blah@blah.com'>
+        </div>
+        <div class='modal-footer'>
+            <button class='btn btn-primary'>Save</button>
+        </div>
+    </form>
+
+We'd like this to only apply *if* username was altered.  To do so, we'll
+add a data-reactor to the button:
+
+    <button class='btn btn-primary disabled' disabled
+            data-reactor='upon'
+            data-upon:change.source:closest:sel='form;input'
+            data-upon:change.remvve^attr='disabled'
+            data-upon:change.remvve^class='disabled'
+            >Save</button>
+
+<form class='modal hide fade' id='upon-change-demo'>
+    <h4 class='modal-header'>Change your Email</h4>
+    <div class='modal-body'>
+        Email: <input name='email' 
+            value='{{ request.args.email|default("blah@blah.com") }}'>
+    </div>
+    <div class='modal-footer'>
+        <button class='btn btn-primary disabled' disabled
+                data-reactor='upon'
+                data-upon:change.source:closest:children='form :: input'
+                data-upon:change.remove^attr='disabled'
+                data-upon:change.remove^class='disabled'
+                >Save</button>
+    </div>
+</form>
+<a href='#upon-change-demo' data-toggle='modal' class='btn btn-info'>Try it!</a>
+
+{% endblock %}
+
+

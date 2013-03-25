@@ -1,0 +1,9 @@
+{%- set default_layout = default_layout|default('fullpage') -%}
+{%- set layout = request.args.layout|default(default_layout) -%}
+{%- if not layout.startswith('/') -%}
+    {%- set layout="/layout/"+layout -%}
+{%- endif -%}
+{%- if not layout.endswith('.html') -%}
+    {%- set layout=layout+".html" -%}
+{%- endif -%}
+{%- extends layout -%}

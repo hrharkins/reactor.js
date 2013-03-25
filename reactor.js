@@ -6,10 +6,9 @@
 
 $(function()
 {
-    function start_reactor()
+    function start_reactors()
     {
         var $this = $(this)
-        var target = this
         var reactor = $this.attr('data-reactor')
         if (! reactor)
         {
@@ -17,9 +16,14 @@ $(function()
         }
         $this.removeAttr('data-reactor')
         $this.attr('data-reactor-started', reactor)
-        $.each(reactor.split(/\s+/),
-        function each_plugin(index, plugin)
+        start_reactor.apply(this, reactor.split(/\s+/))
+    }
+    function start_reactor(reactors)
+    {
+        var $this = $(this)
+        for (var index = 0; index < arguments.length; ++index)
         {
+            var plugin = arguments[index]
             var match = plugin.match(/^(.*?)=(.*)$/);
             if (match)
             {
@@ -39,10 +43,14 @@ $(function()
             {
                 fn.apply($this, $this.data_arguments(alias))
             }
-        })
+        }
+    }
+    $.fn.react = function restart_reactor(reactor)
+    {
+        $.each($(this), function () { start_reactor.call(this, reactor) } )
     }
     $('.data-objects').each(function () { $(this).data_objects() })
-    $('[data-reactor]').each(start_reactor)
+    $('[data-reactor]').each(start_reactors)
     function handle_insertion(event)
     {
         //console.log(event)
@@ -50,7 +58,7 @@ $(function()
         {
             $('.data-objects', event.target)
                 .each(function () { $(this).data_objects() })
-            $('[data-reactor]', event.target).each(start_reactor)
+            $('[data-reactor]', event.target).each(start_reactors)
         }
     }
     $(document).on('DOMNodeInserted', handle_insertion)
@@ -60,7 +68,11 @@ $.fn.data_arguments =
 function data_arguments(scope, defaults, reload)
 {
     var args = $(this).data_objects(scope, defaults, reload)
-    if (args instanceof Array)
+    if (args[''])
+    {
+        return [args['']]
+    }
+    else if (args instanceof Array)
     {
         return args
     }
@@ -91,19 +103,32 @@ function data_objects(scope, defaults, reload)
                 prefix += scope + ':'
             }
             var prefix_length = prefix.length
+            var scope_check = 'data-' + scope
+            var array_prefix = scope_check + '#'
             $.each(this.attributes,
             function process(index, attr)
             {
                 var name = attr.name
                 var colon
                 var stack = []
-                if (name.substring(0, prefix_length) != prefix)
+                if (name.substring(0, prefix_length) == prefix)
+                {
+                    name = name.substr(prefix_length)
+                }
+                else if (name.substring(0, prefix_length) == array_prefix)
+                {
+                    name = name.substr(prefix_length)
+                }
+                else if (name == scope_check)
+                {
+                    name = name.substr(scope_check.length)
+                }
+                else
                 {
                     return
                 }
 
                 // Do these in reverse order
-                name = name.substr(prefix_length)
                 name = name.replace(/\^(.)/, 
                                     function(m) { return m[1].toUpperCase() })
                 while ((colon = name.lastIndexOf(":")) >= 0)
@@ -172,10 +197,19 @@ function data_objects(scope, defaults, reload)
                 var source = context == null ? value : context
                 target = data
                 var match
-                while (match = name.match(/^([^.#]+)(\.|#)(.*)$/))
+                while (match = name.match(/^([^.#]*)(\.|#)(.*)$/))
                 {
                     var address = match[1]
                     var dest = target[address]
+                    if (target instanceof Array)
+                    {
+                        address -= 1
+                        if (address < 0)
+                        {
+                            address = target.length
+                        }
+                    }
+                    name = match[3]
                     switch(match[2])
                     {
                     case ".":
@@ -192,15 +226,22 @@ function data_objects(scope, defaults, reload)
                         else if (! dest instanceof Array)
                         {
                             var newdest = []
-                            for (var name in dest)
+                            for (var copy_name in dest)
                             {
-                                newdest[name] = dest[name]
+                                newdest[copy_name] = dest[copy_name]
                             }
                             dest = target[address] = newdest
                         }
                     }
-                    name = match[3]
                     target = dest
+                }
+                if (target instanceof Array)
+                {
+                    name -= 1
+                    if (name < 0)
+                    {
+                        name = name.length
+                    }
                 }
                 target[name] = source
             })
@@ -310,7 +351,6 @@ $.fn.data_objects.handler('float', parseFloat)
 $.fn.data_objects.handler('str', function(t) { return "" + t})
 $.fn.data_objects.handler('$', function(v) { return jQuery(v) }, /::/, true)
 $.fn.data_objects.handler('child', function(v) { return $(v, $(this)) }, '::')
-$.fn.data_objects.handler('this', function() { return $(this) }, false)
 $.fn.data_objects.handler('children', function() 
     { return $(this).children() }, false)
 $.fn.data_objects.handler('contents', function() 
@@ -319,6 +359,10 @@ $.fn.data_objects.handler('parent',
     function() { return $(this).parent() }, false)
 $.fn.data_objects.handler('closest', 
     function(v) { return $(this).closest(v) }, '::')
+$.fn.data_objects.handler('prev', 
+    function(v) { return $(this).prevAll(v) }, '::')
+$.fn.data_objects.handler('next', 
+    function(v) { return $(this).nextAll(v) }, '::')
 $.fn.data_objects.handler('html', function() { return $(this).html() }, false)
 $.fn.data_objects.handler('text', function() { return $(this).text() }, false)
 $.fn.data_objects.handler('attr', function(v) { return $(this).attr(v) }, '::')
@@ -604,9 +648,28 @@ function upon(self, options)
         case "target": break
         default:
             var subcfg = config.of(eventtype)
-            var $source = subcfg.$('source', $global_source)
-            var $target = subcfg.$('target', $global_target)
-            var returns = subcfg.bool('return', false)
+            setup_actions(eventtype, subcfg, actions, 
+                          $global_source, $global_target, false)
+        }
+    })
+
+    function setup_actions(eventtype, subcfg, actions, 
+                           $source, $target, returns)
+    {
+        var $source = subcfg.$('source', $source)
+        var $target = subcfg.$('target', $target)
+        var returns = subcfg.bool('return', returns)
+        if (actions instanceof Array)
+        {
+            $.each(actions,
+            function(index, action)
+            {
+                setup_actions(eventtype, subcfg.of(index), action, 
+                              $source, $target, returns)
+            })
+        }
+        else
+        {
             $.each(actions,
             function(action)
             {
@@ -621,7 +684,7 @@ function upon(self, options)
                 }
             })
         }
-    })
+    }
 });
 
 reactor(

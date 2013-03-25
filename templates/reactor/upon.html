@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+
+{% block markdown %}
+The *upon* Reactor
+==
+
+This critical reactor manages the triggering of jQuery method calls when
+events are received on an element.  The events and methods can be of any
+nature, as well as the arguments the methods receive.
+
+Data Arguments to *upon*
+===
+
+<dl><dt>data-upon:source</dt>
+    <dd>Specifies the element which will be watched for events.  By default
+        it is *this* element, but for cases like <a
+        href='/example/enable.html'>the button enable example</a>, watching
+        other elements for things like change can be very useful.
+
+    <dt>data-upon:target</dt>
+    <dd>Specifies wihch element will have method(s) invoked when the source
+        element has received watched events.  If not specified, *this* is
+        assumed.</dd>
+
+    <dt>data-upon:<i>event</i>.<i>method</i></dt>
+    <dt>data-upon:<i>event</i>.<i>method</i>#<i>argument...</i></dt>
+    <dt>data-upon:<i>event</i>.<i>method</i>.<i>argument...</i></dt>
+    <dd>Indicates which method or methods to apply to the target.
+        Arguments are specified as structured data or as an array that is
+        applied as arguments.  See <a href='/arguments.html'>the section
+        regarding data objects and arguments for more details.</a></dd>
+
+    <dt>data-upon:<i>event</i>.source</dt>
+    <dt>data-upon:<i>event</i>.target</dt>
+    <dd>Same as the more global versions but applies to only one event.</dd>
+
+    <dt>data-upon:<i>event</i>.<i>method</i>.source</dt>
+    <dt>data-upon:<i>event</i>.<i>method</i>.target</dt>
+    <dd>Same as the more global versions but applies to only one method.</dd>
+</dl>
+
+The Basics
+===
+
+*upon* manages the automatic binding of events from a *source* to a
+*target*, each defaulting to *this* if not provided.  *upon* then connects
+various *event* bindings to the *methods* to call, as well as the arguments
+to apply.
+
+Doing something with "click", such as adding data, is a typical activity:
+
+    <ul>
+    </ul>
+    <button data-reactor='upon'
+            data-upon:target:prev='ul'
+            data-upon:click.append='<li>Here</li>'>Add</button>
+
+Let's try it:
+
+<div class='well'>
+<ul>
+</ul>
+<button data-reactor='upon'
+        data-upon:target:prev='ul'
+        data-upon:click.append='<li>Here</li>'>Add</button>
+</div>
+
+Ordered Methods
+===
+
+Sometimes when multiple methods are being triggered by the same event order
+of the methods applied matters.  In those cases, using an array to control
+the methods will do the trick:
+
+<button data-reactor='upon'
+        data-upon:click#.text='Waiting'
+        data-upon:click#.delay:int=1500
+        data-upon:click#.fade^out='[]'>Wait and fade</button>
+
+{% endblock %}
+

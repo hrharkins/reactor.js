@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block markdown %}
+What is {{THIS}}?
+===
+
+{{THIS}} is a library to make defining consistent jQuery plugins easy as
+well as invoke any jQuery plugin via data attributes.  This can alleviate a
+number of common Javascript activities simply by defining data attributes
+in the HTML.
+
+Example
+===
+
+Suppose we have some content we only want to load via AJAX upon inclusion
+of a tag.  This can be accomplished by Javascript thusly:
+
+    $(function()
+    {
+        $('.loadable').function(
+        function loadit()
+        {
+            var $this = $(this)
+            $this.load($this.attr('src'))
+        })
+    })
+
+Not too hard, but requires some custom definition.  Additionally, this is
+often stored in .js files and then is applied "magically" without any
+indiciation in the markup as to what is happening. 
+
+{{THIS}} simplifies this sort of task (Javascript automation on load or 
+other event) by means of data attribtues:
+
+    <div data-reactor='load' data-load='/inline/blob.html'>
+
+Which produces the following:
+
+<div class='well' data-reactor='load' data-load='/inline/now.html'>
+    Loading...
+</div>
+
+But let's also add the ability to refresh:
+
+<button data-reactor='upon'
+        data-upon:target:parent:prev='div'
+        data-upon:click.react='load'
+        class='btn btn-primary'>Refresh</button>
+
+Which is specified thusly:
+
+    <button data-reactor='upon'
+            data-upon:click.target:parent:prev='div'
+            data-upon:click.react='load'
+            class='btn btn-primary'>Refresh</button>
+
+What Is All This Stuff?
+===
+
+Here is what the various bits mean:
+
+<dl><dt>data-reactor</dt>
+    <dd>Lists the reactors to apply to the element, separated by space.
+        Each reactor may be aliased by using a name and equal sign ahead of
+        it (e.g., "alias=reactor"), and through aliases can be used
+        multiple times.  Arguments for the reactor are specified
+        structurally through data-*alias* attributes.
+        </dd>
+    <dt>data-load<dt>
+    <dd>Informed the jQuery "load" method where to load from.</dd>
+    <dt>data-upon:target:parent:prev='div'</dt>
+    <dd>Told the "upon" reactor where to apply methods once someone clicked
+        the element (button).  In this case, the target reciever is the
+        closest previous "div' in the parent HTML structure.</dd>
+    <dt>data-upon:click.react='load'</dt>
+    <dd>Indicated that when a click occured that .react('load') should be
+        called on the target</dd>
+</dl>
+
+A few things to note:
+===
+
+ * Automation happened without writing any Javascript
+ * The actions/reactions can be traced back to their sources in HTML
+
+What's Next?
+===
+
+<a href='/arguments.html'>Defining arguments for reactors</a>
+
+{% endblock %}
+

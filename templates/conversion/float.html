@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block markdown %}
+:float
+===
+
+Converts the current value to a floating point number -- produces NaN on 
+failure.
+
+    <div class='span8' data-reactor='text'
+         data-text:#0:float='5'></div>
+<div class='alert alert-success' data-reactor='text'
+     data-text:#1:float='5'></div>
+
+    <div class='span8' data-reactor='text'
+         data-text:#0:float='10.5'></div>
+<div class='alert alert-success' data-reactor='text'
+     data-text:#1:float='10.5'></div>
+
+    <div class='span8' data-reactor='text'
+         data-text:#0:float='hello'></div>
+<div class='alert alert-error' data-reactor='text'
+     data-text:#1:float='hello'></div>
+
+{% endblock %}
+

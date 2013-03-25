@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block markdown %}
+Reactor Arguments
+===
+
+The arguments for reactors are combined by using the HTML data- attributes.
+These arguments can be simple, like strings, numbers, and booleans; or
+they can be complex like arrays, objects, and selectors.  For reactions
+that manage methods, a data object is treated as a single argument unless
+it is an array, in which case it is applied as multiple arguments. 
+
+Each data attribute has three parts:
+
+<div class='well'>
+    <b>data-<a href='#alias'><i style='color:red'>reactor-alias</i></a><a 
+        href='#argspec'>:<i style='color:green'>argument-spec</i></a><a
+        href='#conversion'><span style='color:blue'>:<i>type-conversion</i>
+        </a></span></b>
+</div>
+
+The last part, <b style='color:blue'>:<i>type-conversion</i></b>, is both 
+repeatable and optional.  <b style='color:green'>:<i>argument-spec</i></b>
+is likewise optional for trivial cases.  <b>data-<span style='color:red'>
+<i>reactor-alias</i></span></b> is required in all cases.
+
+<a name='alias'><span style='color:red'><i>reactor-alias</i></span></a>
+===
+
+Indicates which reactor the associated data objects belong to.  This can be
+the reactor type name, such as "upon", or some other name if the reactor
+was aliased (possibly multiple times).
+
+<a name='argspec'><span style='color:green'><i>argument-spec</i></span></a>
+===
+
+Describes one element in the data object space to define.  Structurally, a
+data object is a nested Javascript Object, whose elements are separated by
+dots:
+
+    data-obj:a.b.c.d = obj.a.b.c.d
+
+For arrays, a # is used to indicate which element to add.  These start with
+1 for ease of reading and can be mixed with object specifiers:
+
+    data-obj:a#1.b = obj.a[0].b
+
+To append to the end of the list, use # with no value, or #0:
+
+    data-obj:a# = obj.a[0]
+    data-obj:a# = obj.a[1]
+    data-obj:a# = obj.a[2]
+
+The value can be any of the following *if no type covnersions are applied*:
+
+<dl><dt>null</dt>
+    <dd>The Javascript *null* value</dd>
+
+    <dt>true</dt>
+    <dd>The Javascript *true* value</dd>
+
+    <dt>false</dt>
+    <dd>The Javascript *false* value</dd>
+
+    <dt>window</dt>
+    <dd>The browser window</dd>
+
+    <dt>document</dt>
+    <dd>The current document</dd>
+
+    <dt>[]</dt>
+    <dd>An empty array (useful for empty arguments to methods)</dd>
+</dl>
+
+Otherwise, value is assumed to be a string -- unless conversions are
+applied.
+
+In cases where only one values is needed to define an argument and no type
+conversion applied, the entire argument-spec, including the preceeding ":"
+can be omitted.
+
+<a name='conversion'><span style='color:blue'><i>type-conversion</i></span></a>
+===
+
+To convert the string value to something else, type-conversions are applied
+in the order they appear on the line.  A list of all conversions can be
+found in the menu above.  Here is a summary:
+
+<dl><dt>int</dt>
+    <dt>float</dt>
+    <dt>str</dt>
+    <dd>Primitive conversion operations.  str is necessary to indicate that
+        strings matching constants should not be converted to objects (like
+        "true" or "false").</dd>
+
+    <dt>this<dt>
+    <dt>parent</dt>
+    <dt>children</dt>
+    <dt>contents</dt>
+    <dt>html</dt>
+    <dt>text</dt>
+    <dd>Represent various jQuery selectors and extractable values</dd>
+
+    <dt>$<dt>
+    <dt>child<dt>
+    <dt>closest</dt>
+    <dt>next</dt>
+    <dt>prev</dt>
+    <dt>attr</dt>
+    <dd>Selects against previous selectors</dd>
+</dl>
+
+Conversions are applied left-to-right, all selector cases use double-colon
+to separate elements: 
+
+    data-upon:target:closest:child='.modal :: .modal-header'
+
+Would find the containing modal's modal-header element in bootstrap.js.
+
+{% endblock %}
+

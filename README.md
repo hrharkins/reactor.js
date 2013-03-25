@@ -11,7 +11,7 @@ Dependencies
 Viewing Documentation
 =====================
 
-In the downloaded tree:
+In the downloaded tree (Unix/Linux/Mac example):
 
     $ virtualenv ve
     $ ./ve/bin/pip install -f miniserv-requirements.txt

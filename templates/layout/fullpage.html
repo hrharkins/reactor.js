@@ -1,0 +1,60 @@
+{% extends "layout/structured.html" %}
+
+{% block nav %}
+<div class='navbar navbar-fixed-top'>
+    <div class='navbar-inner'>
+        <a href='/' class='brand'>reactor.js</a>
+        <ul class='nav pull-right'>
+            <li class='dropdown'>
+                <a href='#' class='dropdown-toggle' data-toggle='dropdown'>
+                    Topics
+                    <b class='caret'></b></a>
+                <ul class='dropdown-menu'>
+                    <li><a href='/index.html'>
+                        Introduction</a></li>
+                    <li><a href='/arguments.html'>
+                        Reactor Arguments</a></li>
+                </ul>
+            </li>
+            <li class='dropdown'>
+                <a href='#' class='dropdown-toggle' data-toggle='dropdown'>
+                    Built-In Reactors
+                    <b class='caret'></b></a>
+                <ul class='dropdown-menu'>
+                    <li><a href='/reactor/upon.html'>
+                        The "upon" reactor</a></li>
+                </ul>
+            </li>
+            <li class='dropdown'>
+                <a href='#' class='dropdown-toggle' data-toggle='dropdown'>
+                    Built-In Conversions
+                    <b class='caret'></b></a>
+                <ul class='dropdown-menu'>
+                    <li><a href='/conversion/int.html'>int</a></li>
+                    <li><a href='/conversion/float.html'>float</a></li>
+                    <li><a href='/conversion/str.html'>str</a></li>
+                    <li class='divider'></li>
+                    <li><a href='/conversion/selector.html'>$</a></li>
+                </ul>
+            </li>
+            <li class='dropdown'>
+                <a href='#' class='dropdown-toggle' data-toggle='dropdown'>
+                    Cookbook
+                    <b class='caret'></b></a>
+                <ul class='dropdown-menu'>
+                    <li><a href='/example/enable.html'>
+                        Enable Save on Change</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class='row'>
+    <div class='span12'>
+    {{ super() }}
+    </div>
+</div>
+{% endblock %}

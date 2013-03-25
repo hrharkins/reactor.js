@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block markdown %}
+:$
+===
+
+Does a jQuery select on the value up to the first "::".  This can be used
+with other conversions to extract values or reference elements.
+
+For instance, consider this div:
+
+    <div id='here'>Here</div>
+
+And here it is:
+
+<div class='well' id='here'>Here</div>
+
+We can reference it and extract the text, assiging it to this div:
+
+    <div data-reactor='text' data-text:#1:$:text='#here'></div>
+<div class='alert alert-success'
+    data-reactor='text' data-text:#1:$:text='#here'></div>
+
+{% endblock %}
+

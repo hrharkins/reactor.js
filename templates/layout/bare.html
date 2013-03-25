@@ -1,0 +1,7 @@
+{%- block page scoped -%}
+    {%- block content scoped -%}
+        {%- filter markdown -%}
+            {%- block markdown scoped %}{% endblock -%}
+        {%- endfilter -%}
+    {%- endblock -%}
+{%- endblock -%}

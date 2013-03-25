@@ -17,13 +17,19 @@ except ImportError:
     print >>sys.stderr, '$ ' + sys.argv[0]
     sys.exit(20)
 
+import datetime
+
 def configure(app):
     md = Markdown(app)
 
-    @app.route('/<path:page>.md')
+    @app.route('/')
+    def index():
+        return flask.redirect('/index.html')
+
+    @app.route('/<path:page>')
     def make_md(page):
-        md = open(page + '.md').read()
-        return flask.render_template_string('{{ page|markdown }}', page=md)
+        return flask.render_template(page, THIS='***reactor.js***',
+                                     now=datetime.datetime.now)
 
 if __name__ == '__main__':
     app = flask.Flask(__name__)

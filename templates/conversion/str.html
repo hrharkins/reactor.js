@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block markdown %}
+:str
+===
+
+Makes sure the value provided is treated as a string, even if it is the
+name of a constant :
+
+    <div class='span8' data-reactor='text'
+         data-text:#1='window'></div>
+<div class='alert alert-warning' data-reactor='text'
+     data-text:#1='window'></div>
+
+    <div class='span8' data-reactor='text'
+         data-text:#1='window'></div>
+<div class='alert alert-success' data-reactor='text'
+     data-text:#1:str='window'></div>
+
+{% endblock %}
+
