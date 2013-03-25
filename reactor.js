@@ -622,7 +622,7 @@ function upon(self, options)
             })
         }
     })
-})
+});
 
 reactor(
 function whence(self, options)
